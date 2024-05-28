@@ -1,84 +1,82 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdbool.h>
 
-#define N 8
+#define N 4 // Change this value to solve for a different size of the board
 
-void printSolution(int board[N][N]) {
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            printf(" %d ", board[i][j]);
+void printBoard(char board[N][N])
+{
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            printf("%c ", board[i][j]);
         }
         printf("\n");
     }
+    printf("\n");
 }
 
-int isSafe(int board[N][N], int row, int col) {
-    int i, j;
-
-    // Check this row on left side
-    for (i = 0; i < col; i++) {
-        if (board[row][i]) {
-            return 0;
+bool isSafe(char board[N][N], int row, int col)
+{
+    // Check this column on upper side
+    for (int i = 0; i < row; i++)
+    {
+        if (board[i][col] == 'Q')
+        {
+            return false;
         }
     }
 
     // Check upper diagonal on left side
-    for (i = row, j = col; i >= 0 && j >= 0; i--, j--) {
-        if (board[i][j]) {
-            return 0;
+    for (int i = row, j = col; i >= 0 && j >= 0; i--, j--)
+    {
+        if (board[i][j] == 'Q')
+        {
+            return false;
         }
     }
 
-    // Check lower diagonal on left side
-    for (i = row, j = col; j >= 0 && i < N; i++, j--) {
-        if (board[i][j]) {
-            return 0;
+    // Check upper diagonal on right side
+    for (int i = row, j = col; i >= 0 && j < N; i--, j++)
+    {
+        if (board[i][j] == 'Q')
+        {
+            return false;
         }
     }
 
-    return 1;
+    return true;
 }
 
-int solveNQUtil(int board[N][N], int col) {
-    if (col >= N) {
-        return 1;
+void nqueen(char board[N][N], int row)
+{
+    if (row == N)
+    {
+        printBoard(board);
+        return;
     }
 
-    for (int i = 0; i < N; i++) {
-        if (isSafe(board, i, col)) {
-            board[i][col] = 1;
-
-            if (solveNQUtil(board, col + 1)) {
-                return 1;
-            }
-
-            board[i][col] = 0; // BACKTRACK
+    for (int col = 0; col < N; col++)
+    {
+        if (isSafe(board, row, col))
+        {
+            board[row][col] = 'Q';
+            nqueen(board, row + 1);
+            board[row][col] = '-'; // Backtrack
         }
     }
-
-    return 0;
 }
 
-int solveNQ() {
-    int board[N][N] = { {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0} };
-
-    if (solveNQUtil(board, 0) == 0) {
-        printf("Solution does not exist");
-        return 0;
+int main()
+{
+    char board[N][N];
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            board[i][j] = '-';
+        }
     }
-
-    printSolution(board);
-    return 1;
-}
-
-int main() {
-    solveNQ();
+    nqueen(board, 0);
     return 0;
 }
